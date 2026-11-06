@@ -21,6 +21,7 @@ TAMANOS = ["0 a 5 cm", "5 a 10 cm", "10 a 15 cm", "15 a 20 cm", "20 a 25 cm", "M
 # Sirve .jpg, .jpeg, .png o .webp
 ESTILOS = {
     "Black and Gray": "black_and_gray",
+    "Anime": "anime",
     "Realismo": "realismo",
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
