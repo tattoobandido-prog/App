@@ -3,6 +3,7 @@ TattooLover - Cotizador de tatuajes
 Ejecutar con:  streamlit run tattoolover.py
 Instalar con:  pip install streamlit
 """
+import base64
 import urllib.parse
 from pathlib import Path
 
@@ -11,7 +12,7 @@ import streamlit.components.v1 as components
 
 # ================== CONFIGURACIÓN ==================
 WHATSAPP_NUMBER = "595972815410"  # <-- tu número con código de país, sin + ni espacios
-STUDIO_NAME = "TattooLover"
+STUDIO_NAME = "Tattoo Lovers"
 BASE = Path(__file__).parent
 CARPETA_ESTILOS = BASE / "estilos"  # pon aquí las fotos de ejemplo de cada estilo
 
@@ -57,10 +58,8 @@ CSS = """
 [data-testid="stHeaderActionElements"] { display: none; }
 
 .tl-hero { text-align: center; padding: 8px 0 6px; }
-.tl-titulo {
-  font-family: 'UnifrakturMaguntia', serif !important; font-size: 68px !important; line-height: 1.1; margin: 0;
-  color: #fff; text-shadow: 0 0 18px rgba(225,6,0,.75), 0 3px 0 #7a0000;
-}
+.tl-logo { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto;
+  filter: drop-shadow(0 0 14px rgba(225,6,0,.45)); }
 .tl-sub { color: #cfcfcf; margin-top: 10px; font-size: 17px; }
 .tl-linea { height: 2px; margin: 18px auto 4px; width: 70%;
   background: linear-gradient(90deg, transparent, #e10600, transparent); }
@@ -91,6 +90,14 @@ h2 .tl-num { color: #e10600; }
 .tl-resumen b { color: #ff3b30; }
 </style>
 """
+
+
+def logo_src() -> str:
+    """Logo incrustado en la página (data URI)."""
+    ruta = BASE / "logo.webp"
+    if not ruta.exists():
+        return ""
+    return "data:image/webp;base64," + base64.b64encode(ruta.read_bytes()).decode()
 
 
 def foto_estilo(archivo: str):
@@ -136,7 +143,7 @@ def titulo(num: int, texto: str):
 st.set_page_config(page_title=STUDIO_NAME, page_icon="🖋️", layout="centered")
 st.markdown(CSS, unsafe_allow_html=True)
 st.markdown(
-    f'<div class="tl-hero"><div class="tl-titulo">{STUDIO_NAME}</div>'
+    f'<div class="tl-hero"><img class="tl-logo" src="{logo_src()}" alt="{STUDIO_NAME}">'
     '<div class="tl-sub">Pide tu cotización en 4 pasos y recibe respuesta por WhatsApp</div>'
     '<div class="tl-linea"></div></div>',
     unsafe_allow_html=True,
