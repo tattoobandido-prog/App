@@ -31,9 +31,9 @@ ESTILOS = {
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
     "Lettering": "lettering",
+    "Geométrico": "geometrico",
     "Blackwork": "blackwork",
     "Acuarela": "acuarela",
-    "Geométrico": "geometrico",
     "Tribal": "tribal",
 }
 EXTENSIONES = [".jpg", ".jpeg", ".png", ".webp"]
