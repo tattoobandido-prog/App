@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --rojo: #e10600; --rojo-claro: #ff3b30; --negro: #0b0b0b; --gris: #2a2a2a; --blanco: #ffffff; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: transparent; font-family: "Source Sans Pro", "Segoe UI", sans-serif; color: var(--blanco); }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 6px 0 4px; }
+  .toggle { display: inline-flex; background: #161616; border: 1px solid #3a3a3a; border-radius: 999px; padding: 4px; }
+  .toggle button {
+    appearance: none; border: 0; background: transparent; color: #cfcfcf; font: inherit; font-size: 15px; font-weight: 600;
+    padding: 8px 22px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .toggle button.on { background: var(--rojo); color: var(--blanco); box-shadow: 0 0 14px rgba(225,6,0,.55); }
+  svg { width: 100%; max-width: 260px; height: auto; overflow: visible; }
+  .zona { fill: url(#piel); stroke: #555; stroke-width: 1.2; cursor: pointer; transition: fill .15s, stroke .15s; }
+  .zona:hover { fill: #4a1210; stroke: var(--rojo-claro); }
+  .zona.sel { fill: url(#rojo); stroke: #fff; stroke-width: 1.6; filter: url(#brillo); }
+  .etiqueta { min-height: 26px; font-size: 17px; font-weight: 700; letter-spacing: .3px; text-align: center; }
+  .etiqueta .pista { color: #9a9a9a; font-weight: 400; font-size: 15px; }
+  .etiqueta .ok { color: var(--blanco); }
+  .etiqueta .ok::before { content: "✔ "; color: var(--rojo-claro); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toggle" role="tablist">
+    <button id="btn-frente" class="on" type="button">De frente</button>
+    <button id="btn-espalda" type="button">De espalda</button>
+  </div>
+  <svg id="fig" viewBox="0 0 200 372" xmlns="http://www.w3.org/2000/svg" aria-label="Figura del cuerpo">
+    <defs>
+      <linearGradient id="piel" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#1f1f1f"/>
+      </linearGradient>
+      <linearGradient id="rojo" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff3b30"/><stop offset="1" stop-color="#b00000"/>
+      </linearGradient>
+      <filter id="brillo" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <radialGradient id="halo" cx="50%" cy="45%" r="55%">
+        <stop offset="0" stop-color="rgba(225,6,0,.22)"/><stop offset="1" stop-color="rgba(225,6,0,0)"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="100" cy="190" rx="100" ry="180" fill="url(#halo)"/>
+    <g id="zonas"></g>
+  </svg>
+  <div class="etiqueta" id="etiqueta"><span class="pista">Toca la parte del cuerpo</span></div>
+</div>
+
+<script>
+// Formas compartidas (vista de frente: la izquierda de la persona queda a la derecha de la imagen)
+const F = {
+  cabeza:   '<ellipse cx="100" cy="34" rx="19" ry="23"/>',
+  cuello:   '<path d="M90 55 h20 v15 q-10 5 -20 0 z"/>',
+  hombroD:  '<path d="M74 74 q-18 0 -24 16 q-2 8 4 12 l18 -6 z"/>',
+  hombroI:  '<path d="M126 74 q18 0 24 16 q2 8 -4 12 l-18 -6 z"/>',
+  torsoSup: '<path d="M76 74 h48 q4 0 4 6 v38 q-28 6 -56 0 v-38 q0 -6 4 -6 z"/>',
+  torsoInf: '<path d="M73 122 q27 6 54 0 l-2 46 q-25 5 -50 0 z"/>',
+  ladoD:    '<path d="M66 102 l6 -2 v66 l-5 2 q-4 -30 -1 -66 z"/>',
+  ladoI:    '<path d="M134 102 l-6 -2 v66 l5 2 q4 -30 1 -66 z"/>',
+  cadera:   '<path d="M75 171 q25 5 50 0 l3 22 q-28 8 -56 0 z"/>',
+  gluteoD:  '<path d="M75 171 q12 3 24 3 v24 q-14 2 -27 -4 z"/>',
+  gluteoI:  '<path d="M125 171 q-12 3 -24 3 v24 q14 2 27 -4 z"/>',
+  brazoD:   '<path d="M50 104 l18 -5 l-4 52 q-8 3 -15 0 z"/>',
+  brazoI:   '<path d="M150 104 l-18 -5 l4 52 q8 3 15 0 z"/>',
+  antebD:   '<path d="M48 155 q8 3 16 0 l-5 50 q-6 2 -12 0 z"/>',
+  antebI:   '<path d="M152 155 q-8 3 -16 0 l5 50 q6 2 12 0 z"/>',
+  manoD:    '<ellipse cx="52" cy="218" rx="8" ry="11"/>',
+  manoI:    '<ellipse cx="148" cy="218" rx="8" ry="11"/>',
+  musloD:   '<path d="M73 198 q13 5 26 3 l-3 70 q-10 3 -19 0 z"/>',
+  musloI:   '<path d="M127 198 q-13 5 -26 3 l3 70 q10 3 19 0 z"/>',
+  piernaD:  '<path d="M78 275 q9 3 18 0 l-2 66 q-7 2 -13 0 z"/>',
+  piernaI:  '<path d="M122 275 q-9 3 -18 0 l2 66 q7 2 13 0 z"/>',
+  pieD:     '<ellipse cx="87" cy="352" rx="12" ry="7"/>',
+  pieI:     '<ellipse cx="113" cy="352" rx="12" ry="7"/>',
+};
+
+// Nombre de cada zona según la vista
+const VISTAS = {
+  "Frente": [
+    ["cabeza","Cabeza / Cara"], ["cuello","Cuello"],
+    ["hombroD","Hombro derecho"], ["hombroI","Hombro izquierdo"],
+    ["torsoSup","Pecho"], ["torsoInf","Abdomen"],
+    ["ladoD","Costillas derecha"], ["ladoI","Costillas izquierda"],
+    ["cadera","Cadera / Pelvis"],
+    ["brazoD","Brazo derecho"], ["brazoI","Brazo izquierdo"],
+    ["antebD","Antebrazo derecho"], ["antebI","Antebrazo izquierdo"],
+    ["manoD","Mano derecha"], ["manoI","Mano izquierda"],
+    ["musloD","Muslo derecho"], ["musloI","Muslo izquierdo"],
+    ["piernaD","Canilla derecha"], ["piernaI","Canilla izquierda"],
+    ["pieD","Pie derecho"], ["pieI","Pie izquierdo"],
+  ],
+  // De espalda la izquierda de la persona queda a la izquierda de la imagen
+  "Espalda": [
+    ["cabeza","Cabeza (atrás)"], ["cuello","Nuca"],
+    ["hombroD","Hombro izquierdo (atrás)"], ["hombroI","Hombro derecho (atrás)"],
+    ["torsoSup","Espalda alta / Omóplatos"], ["torsoInf","Espalda baja"],
+    ["ladoD","Costado izquierdo"], ["ladoI","Costado derecho"],
+    ["gluteoD","Glúteo izquierdo"], ["gluteoI","Glúteo derecho"],
+    ["brazoD","Brazo izquierdo (atrás)"], ["brazoI","Brazo derecho (atrás)"],
+    ["antebD","Antebrazo izquierdo (atrás)"], ["antebI","Antebrazo derecho (atrás)"],
+    ["manoD","Dorso mano izquierda"], ["manoI","Dorso mano derecha"],
+    ["musloD","Muslo izquierdo (atrás)"], ["musloI","Muslo derecho (atrás)"],
+    ["piernaD","Pantorrilla izquierda"], ["piernaI","Pantorrilla derecha"],
+    ["pieD","Talón izquierdo"], ["pieI","Talón derecho"],
+  ],
+};
+
+let lado = "Frente";
+let zona = null;
+
+function send(type, extra) {
+  window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type }, extra), "*");
+}
+function altura() { send("streamlit:setFrameHeight", { height: document.body.scrollHeight + 4 }); }
+
+function etiqueta(texto, ok) {
+  const el = document.getElementById("etiqueta");
+  el.innerHTML = ok ? `<span class="ok">${texto}</span>` : `<span class="pista">${texto}</span>`;
+}
+
+function dibujar() {
+  const g = document.getElementById("zonas");
+  g.innerHTML = "";
+  for (const [forma, nombre] of VISTAS[lado]) {
+    const tmp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    tmp.innerHTML = F[forma];
+    const el = tmp.firstElementChild;
+    el.setAttribute("class", "zona" + (nombre === zona ? " sel" : ""));
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    t.textContent = nombre;
+    el.appendChild(t);
+    el.addEventListener("mouseenter", () => { if (!zona) etiqueta(nombre, false); });
+    el.addEventListener("mouseleave", () => { if (!zona) etiqueta("Toca la parte del cuerpo", false); });
+    el.addEventListener("click", () => {
+      zona = nombre;
+      dibujar();
+      send("streamlit:setComponentValue", { value: { lado, zona }, dataType: "json" });
+    });
+    g.appendChild(el);
+  }
+  document.getElementById("btn-frente").classList.toggle("on", lado === "Frente");
+  document.getElementById("btn-espalda").classList.toggle("on", lado === "Espalda");
+  if (zona) etiqueta(zona, true); else etiqueta("Toca la parte del cuerpo", false);
+}
+
+function cambiarLado(nuevo) {
+  if (nuevo === lado) return;
+  lado = nuevo;
+  zona = null;
+  dibujar();
+  send("streamlit:setComponentValue", { value: { lado, zona: null }, dataType: "json" });
+}
+document.getElementById("btn-frente").onclick = () => cambiarLado("Frente");
+document.getElementById("btn-espalda").onclick = () => cambiarLado("Espalda");
+
+let iniciado = false;
+window.addEventListener("message", (ev) => {
+  const d = ev.data || {};
+  if (d.type !== "streamlit:render") return;
+  if (!iniciado) {
+    const a = d.args || {};
+    if (a.lado) lado = a.lado;
+    if (a.zona) zona = a.zona;
+    iniciado = true;
+    dibujar();
+  }
+  altura();
+});
+
+dibujar();
+send("streamlit:componentReady", { apiVersion: 1 });
+window.addEventListener("resize", altura);
+</script>
+</body>
+</html>
