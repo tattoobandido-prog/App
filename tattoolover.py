@@ -101,11 +101,24 @@ def construir_mensaje(d: dict) -> str:
         f"Teléfono: {d['telefono']}",
         f"Zona del cuerpo: {d['zona']} ({d['lado'].lower()})",
         f"Tamaño: {d['tamano']}",
-        f"Estilo: {d['estilo']}",
     ]
+    if d["marca"]:
+        m = d["marca"]
+        lineas.append(f"Marcado en el cuerpo: aprox. {m['ancho_cm']} x {m['alto_cm']} cm ({m['ubicacion']})")
+    lineas.append(f"Estilo: {d['estilo']}")
     if d["detalle"].strip():
         lineas.append(f"Idea / detalles: {d['detalle'].strip()}")
+    if d["foto"]:
+        lineas.append("📎 Te envío una foto de ejemplo a continuación.")
     return "\n".join(lineas)
+
+
+def tamano_para(cm: int) -> str:
+    """Rango de tamaño según la medida más grande marcada en el cuerpo."""
+    for limite, rango in zip([5, 10, 15, 20, 25], TAMANOS):
+        if cm <= limite:
+            return rango
+    return TAMANOS[-1]
 
 
 def titulo(num: int, texto: str):
@@ -126,12 +139,23 @@ st.session_state.setdefault("estilo", None)
 
 # ---- Paso 1: zona del cuerpo ----
 titulo(1, "¿Dónde te lo quieres hacer?")
-sel = _cuerpo(key="cuerpo", default=None) or {}
+sel = _cuerpo(key="cuerpo", default=None, **(st.session_state.get("cuerpo") or {})) or {}
 lado = sel.get("lado") or "Frente"
 zona = sel.get("zona")
+marca = sel.get("marca")
+
+# Si marcó el tamaño en el cuerpo, se elige el rango solo
+firma = (marca or {}).get("ancho_cm"), (marca or {}).get("alto_cm"), zona
+if marca and st.session_state.get("_ultima_marca") != firma:
+    st.session_state["tamano"] = tamano_para(max(marca["ancho_cm"], marca["alto_cm"]))
+st.session_state["_ultima_marca"] = firma
 
 # ---- Paso 2: tamaño ----
 titulo(2, "¿De qué tamaño?")
+if marca:
+    st.caption(f"Según lo que marcaste: aprox. {marca['ancho_cm']} × {marca['alto_cm']} cm. Puedes cambiarlo si quieres.")
+else:
+    st.caption("Si no sabes, vuelve al muñequito y marca con el dedo el tamaño sobre el cuerpo.")
 tamano = st.pills("Tamaño", TAMANOS, key="tamano", label_visibility="collapsed")
 
 # ---- Paso 3: estilo ----
@@ -156,12 +180,15 @@ titulo(4, "Tus datos")
 nombre = st.text_input("Nombre")
 telefono = st.text_input("Tu WhatsApp")
 detalle = st.text_area("Cuéntanos tu idea (opcional)")
+foto = st.checkbox("📷 Tengo una foto o dibujo de ejemplo para enviar")
 
 estilo = st.session_state["estilo"]
+texto_marca = (f" (marcado: ≈ {marca['ancho_cm']} × {marca['alto_cm']} cm, {marca['ubicacion']})"
+               if marca else "")
 st.markdown(
     '<div class="tl-resumen">'
     f'<div><b>Zona:</b> {f"{zona} ({lado.lower()})" if zona else "—"}</div>'
-    f'<div><b>Tamaño:</b> {tamano or "—"}</div>'
+    f'<div><b>Tamaño:</b> {tamano or "—"}{texto_marca}</div>'
     f'<div><b>Estilo:</b> {estilo or "—"}</div>'
     '</div>',
     unsafe_allow_html=True,
@@ -174,8 +201,12 @@ if completo:
     mensaje = construir_mensaje({
         "nombre": nombre, "telefono": telefono, "detalle": detalle,
         "zona": zona, "lado": lado, "tamano": tamano, "estilo": estilo,
+        "marca": marca, "foto": foto,
     })
     url = f"https://wa.me/{WHATSAPP_NUMBER}?text={urllib.parse.quote(mensaje)}"
     st.link_button("📲 Enviar cotización por WhatsApp", url, type="primary", use_container_width=True)
+    if foto:
+        st.info("📎 Cuando se abra WhatsApp, envía el mensaje y después adjunta tu foto en el mismo chat "
+                "(toca el clip 📎 o la cámara).")
 else:
     st.warning("Completa zona, tamaño, estilo, nombre y WhatsApp para poder enviar.")
