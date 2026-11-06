@@ -20,6 +20,7 @@ TAMANOS = ["0 a 5 cm", "5 a 10 cm", "10 a 15 cm", "15 a 20 cm", "20 a 25 cm", "M
 # nombre del estilo -> nombre del archivo de foto (sin extensión) en la carpeta "estilos"
 # Sirve .jpg, .jpeg, .png o .webp
 ESTILOS = {
+    "Black and Gray": "black_and_gray",
     "Realismo": "realismo",
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
@@ -68,8 +69,8 @@ h2 .tl-num { color: #e10600; }
 .stButton > button[kind="primary"], .stLinkButton > a[kind="primary"] { box-shadow: 0 0 16px rgba(225,6,0,.5); }
 
 .tl-card-vacia {
-  aspect-ratio: 4 / 3; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 10px; margin-bottom: 8px; font-size: 20px; color: #fff;
+  aspect-ratio: 3 / 4; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 10px; margin-bottom: 16px; font-size: 20px; color: #fff;
   font-family: 'UnifrakturMaguntia', serif;
   background: radial-gradient(circle at 30% 20%, rgba(225,6,0,.35), transparent 60%), #151515;
   border: 1px solid #2e2e2e;
@@ -77,7 +78,7 @@ h2 .tl-num { color: #e10600; }
 /* estilos: siempre 2 por fila, también en celular */
 [data-testid="stHorizontalBlock"] { flex-wrap: nowrap !important; gap: 12px !important; }
 [data-testid="stColumn"] { min-width: 0 !important; width: 50% !important; flex: 1 1 50% !important; }
-[data-testid="stImage"] img { border-radius: 12px; aspect-ratio: 4 / 3; object-fit: cover; }
+[data-testid="stImage"] img { border-radius: 12px; aspect-ratio: 3 / 4; object-fit: cover; }
 
 .tl-resumen { background: #141414; border: 1px solid #2e2e2e; border-radius: 14px; padding: 14px 18px; }
 .tl-resumen div { padding: 4px 0; }
