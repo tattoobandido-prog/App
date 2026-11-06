@@ -24,6 +24,7 @@ ESTILOS = {
     "Anime": "anime",
     "Colorido": "colorido",
     "Maorí": "maori",
+    "Japonés": "japones",
     "Realismo": "realismo",
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
