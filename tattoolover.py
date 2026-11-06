@@ -23,6 +23,7 @@ ESTILOS = {
     "Black and Gray": "black_and_gray",
     "Anime": "anime",
     "Colorido": "colorido",
+    "Maorí": "maori",
     "Realismo": "realismo",
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
