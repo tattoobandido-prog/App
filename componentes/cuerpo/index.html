@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  :root { --rojo: #e10600; --rojo-claro: #ff3b30; --negro: #0b0b0b; --gris: #2a2a2a; --blanco: #ffffff; }
+  :root { --rojo: #e10600; --rojo-claro: #ff3b30; --blanco: #ffffff; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: transparent; font-family: "Source Sans Pro", "Segoe UI", sans-serif; color: var(--blanco); }
   .wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 6px 0 4px; }
@@ -13,103 +13,52 @@
     padding: 8px 22px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s;
   }
   .toggle button.on { background: var(--rojo); color: var(--blanco); box-shadow: 0 0 14px rgba(225,6,0,.55); }
-  svg { width: 100%; max-width: 260px; height: auto; overflow: visible; }
-  .zona { fill: url(#piel); stroke: #555; stroke-width: 1.2; cursor: pointer; transition: fill .15s, stroke .15s; }
-  .zona:hover { fill: #4a1210; stroke: var(--rojo-claro); }
-  .zona.sel { fill: url(#rojo); stroke: #fff; stroke-width: 1.6; filter: url(#brillo); }
+  svg { width: 100%; max-width: 300px; height: auto; overflow: visible; -webkit-tap-highlight-color: transparent; }
+  .borde path { fill: none; stroke: #8a8a8a; stroke-width: 3; stroke-linejoin: round; }
+  .relleno path { fill: url(#piel); stroke: none; }
+  .detalle { fill: none; stroke: #a3a3a3; stroke-width: 1.1; stroke-linecap: round; opacity: .85; }
+  .zona { fill: rgba(225,6,0,0); cursor: pointer; transition: fill .15s; }
+  .zona:hover { fill: rgba(225,6,0,.28); }
+  .zona.sel { fill: rgba(225,6,0,.82); }
   .etiqueta { min-height: 26px; font-size: 17px; font-weight: 700; letter-spacing: .3px; text-align: center; }
   .etiqueta .pista { color: #9a9a9a; font-weight: 400; font-size: 15px; }
-  .etiqueta .ok { color: var(--blanco); }
   .etiqueta .ok::before { content: "✔ "; color: var(--rojo-claro); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="toggle" role="tablist">
+  <div class="toggle">
     <button id="btn-frente" class="on" type="button">De frente</button>
     <button id="btn-espalda" type="button">De espalda</button>
   </div>
-  <svg id="fig" viewBox="0 0 200 372" xmlns="http://www.w3.org/2000/svg" aria-label="Figura del cuerpo">
+  <svg viewBox="-6 4 312 596" xmlns="http://www.w3.org/2000/svg" aria-label="Figura del cuerpo">
     <defs>
-      <linearGradient id="piel" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#1f1f1f"/>
+      <linearGradient id="piel" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#bfbfbf"/>
+        <stop offset=".3" stop-color="#f4f4f4"/>
+        <stop offset=".5" stop-color="#ffffff"/>
+        <stop offset=".7" stop-color="#f4f4f4"/>
+        <stop offset="1" stop-color="#bfbfbf"/>
       </linearGradient>
-      <linearGradient id="rojo" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#ff3b30"/><stop offset="1" stop-color="#b00000"/>
-      </linearGradient>
-      <filter id="brillo" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="3" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
       <radialGradient id="halo" cx="50%" cy="45%" r="55%">
-        <stop offset="0" stop-color="rgba(225,6,0,.22)"/><stop offset="1" stop-color="rgba(225,6,0,0)"/>
+        <stop offset="0" stop-color="rgba(225,6,0,.30)"/><stop offset="1" stop-color="rgba(225,6,0,0)"/>
       </radialGradient>
+      <clipPath id="silueta"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></clipPath>
     </defs>
-    <ellipse cx="100" cy="190" rx="100" ry="180" fill="url(#halo)"/>
-    <g id="zonas"></g>
+    <ellipse cx="150" cy="300" rx="150" ry="290" fill="url(#halo)" pointer-events="none"/>
+    <g class="borde"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></g>
+    <g class="relleno"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></g>
+    <path id="detalle" class="detalle" d=""/>
+    <g id="zonas" clip-path="url(#silueta)"></g>
   </svg>
-  <div class="etiqueta" id="etiqueta"><span class="pista">Toca la parte del cuerpo</span></div>
+  <div class="etiqueta" id="etiqueta"></div>
 </div>
 
 <script>
-// Formas compartidas (vista de frente: la izquierda de la persona queda a la derecha de la imagen)
-const F = {
-  cabeza:   '<ellipse cx="100" cy="34" rx="19" ry="23"/>',
-  cuello:   '<path d="M90 55 h20 v15 q-10 5 -20 0 z"/>',
-  hombroD:  '<path d="M74 74 q-18 0 -24 16 q-2 8 4 12 l18 -6 z"/>',
-  hombroI:  '<path d="M126 74 q18 0 24 16 q2 8 -4 12 l-18 -6 z"/>',
-  torsoSup: '<path d="M76 74 h48 q4 0 4 6 v38 q-28 6 -56 0 v-38 q0 -6 4 -6 z"/>',
-  torsoInf: '<path d="M73 122 q27 6 54 0 l-2 46 q-25 5 -50 0 z"/>',
-  ladoD:    '<path d="M66 102 l6 -2 v66 l-5 2 q-4 -30 -1 -66 z"/>',
-  ladoI:    '<path d="M134 102 l-6 -2 v66 l5 2 q4 -30 1 -66 z"/>',
-  cadera:   '<path d="M75 171 q25 5 50 0 l3 22 q-28 8 -56 0 z"/>',
-  gluteoD:  '<path d="M75 171 q12 3 24 3 v24 q-14 2 -27 -4 z"/>',
-  gluteoI:  '<path d="M125 171 q-12 3 -24 3 v24 q14 2 27 -4 z"/>',
-  brazoD:   '<path d="M50 104 l18 -5 l-4 52 q-8 3 -15 0 z"/>',
-  brazoI:   '<path d="M150 104 l-18 -5 l4 52 q8 3 15 0 z"/>',
-  antebD:   '<path d="M48 155 q8 3 16 0 l-5 50 q-6 2 -12 0 z"/>',
-  antebI:   '<path d="M152 155 q-8 3 -16 0 l5 50 q6 2 12 0 z"/>',
-  manoD:    '<ellipse cx="52" cy="218" rx="8" ry="11"/>',
-  manoI:    '<ellipse cx="148" cy="218" rx="8" ry="11"/>',
-  musloD:   '<path d="M73 198 q13 5 26 3 l-3 70 q-10 3 -19 0 z"/>',
-  musloI:   '<path d="M127 198 q-13 5 -26 3 l3 70 q10 3 19 0 z"/>',
-  piernaD:  '<path d="M78 275 q9 3 18 0 l-2 66 q-7 2 -13 0 z"/>',
-  piernaI:  '<path d="M122 275 q-9 3 -18 0 l2 66 q7 2 13 0 z"/>',
-  pieD:     '<ellipse cx="87" cy="352" rx="12" ry="7"/>',
-  pieI:     '<ellipse cx="113" cy="352" rx="12" ry="7"/>',
-};
-
-// Nombre de cada zona según la vista
-const VISTAS = {
-  "Frente": [
-    ["cabeza","Cabeza / Cara"], ["cuello","Cuello"],
-    ["hombroD","Hombro derecho"], ["hombroI","Hombro izquierdo"],
-    ["torsoSup","Pecho"], ["torsoInf","Abdomen"],
-    ["ladoD","Costillas derecha"], ["ladoI","Costillas izquierda"],
-    ["cadera","Cadera / Pelvis"],
-    ["brazoD","Brazo derecho"], ["brazoI","Brazo izquierdo"],
-    ["antebD","Antebrazo derecho"], ["antebI","Antebrazo izquierdo"],
-    ["manoD","Mano derecha"], ["manoI","Mano izquierda"],
-    ["musloD","Muslo derecho"], ["musloI","Muslo izquierdo"],
-    ["piernaD","Canilla derecha"], ["piernaI","Canilla izquierda"],
-    ["pieD","Pie derecho"], ["pieI","Pie izquierdo"],
-  ],
-  // De espalda la izquierda de la persona queda a la izquierda de la imagen
-  "Espalda": [
-    ["cabeza","Cabeza (atrás)"], ["cuello","Nuca"],
-    ["hombroD","Hombro izquierdo (atrás)"], ["hombroI","Hombro derecho (atrás)"],
-    ["torsoSup","Espalda alta / Omóplatos"], ["torsoInf","Espalda baja"],
-    ["ladoD","Costado izquierdo"], ["ladoI","Costado derecho"],
-    ["gluteoD","Glúteo izquierdo"], ["gluteoI","Glúteo derecho"],
-    ["brazoD","Brazo izquierdo (atrás)"], ["brazoI","Brazo derecho (atrás)"],
-    ["antebD","Antebrazo izquierdo (atrás)"], ["antebI","Antebrazo derecho (atrás)"],
-    ["manoD","Dorso mano izquierda"], ["manoI","Dorso mano derecha"],
-    ["musloD","Muslo izquierdo (atrás)"], ["musloI","Muslo derecho (atrás)"],
-    ["piernaD","Pantorrilla izquierda"], ["piernaI","Pantorrilla derecha"],
-    ["pieD","Talón izquierdo"], ["pieI","Talón derecho"],
-  ],
-};
-
+const ZONAS = {"cabeza": "M110 10 L190 10 L190 76 L110 76 Z", "cuello": "M118 76 L182 76 L182 102 L118 102 Z", "pecho": "M100 102 L200 102 L200 172 L100 172 Z", "abdomen": "M114 172 L186 172 L186 264 L114 264 Z", "ladoD": "M88 172 L114 172 L114 264 L92 264 Z", "cadera": "M88 264 L212 264 L212 314 L88 314 Z", "hombroD": "M40 98 L100 98 L100 172 L96 172 L60 170 Z", "brazoD": "M20 166 L96 164 L82 240 L20 240 Z", "antebD": "M0 240 L82 240 L58 313 L0 313 Z", "manoD": "M0 313 L62 313 L62 400 L0 400 Z", "musloD": "M60 314 L150 314 L150 446 L60 446 Z", "piernaD": "M60 446 L150 446 L150 560 L60 560 Z", "pieD": "M60 560 L150 560 L150 600 L60 600 Z", "gluteoD": "M88 268 L150 268 L150 338 L96 338 Z", "ladoI": "M212 172 L186 172 L186 264 L208 264 Z", "hombroI": "M260 98 L200 98 L200 172 L204 172 L240 170 Z", "brazoI": "M280 166 L204 164 L218 240 L280 240 Z", "antebI": "M300 240 L218 240 L242 313 L300 313 Z", "manoI": "M300 313 L238 313 L238 400 L300 400 Z", "musloI": "M240 314 L150 314 L150 446 L240 446 Z", "piernaI": "M240 446 L150 446 L150 560 L240 560 Z", "pieI": "M240 560 L150 560 L150 600 L240 600 Z", "gluteoI": "M212 268 L150 268 L150 338 L204 338 Z"};
+const VISTAS = {"Frente": [["cabeza", "Cabeza / Cara"], ["cuello", "Cuello"], ["pecho", "Pecho"], ["abdomen", "Abdomen"], ["ladoD", "Costillas derecha"], ["ladoI", "Costillas izquierda"], ["cadera", "Cadera / Pelvis"], ["hombroD", "Hombro derecho"], ["hombroI", "Hombro izquierdo"], ["brazoD", "Brazo derecho"], ["brazoI", "Brazo izquierdo"], ["antebD", "Antebrazo derecho"], ["antebI", "Antebrazo izquierdo"], ["manoD", "Mano derecha"], ["manoI", "Mano izquierda"], ["musloD", "Muslo derecho"], ["musloI", "Muslo izquierdo"], ["piernaD", "Canilla derecha"], ["piernaI", "Canilla izquierda"], ["pieD", "Pie derecho"], ["pieI", "Pie izquierdo"]], "Espalda": [["cabeza", "Cabeza"], ["cuello", "Nuca"], ["pecho", "Espalda alta / Omóplatos"], ["abdomen", "Espalda baja"], ["ladoD", "Costado izquierdo"], ["ladoI", "Costado derecho"], ["musloD", "Muslo izquierdo"], ["musloI", "Muslo derecho"], ["gluteoD", "Glúteo izquierdo"], ["gluteoI", "Glúteo derecho"], ["hombroD", "Hombro izquierdo"], ["hombroI", "Hombro derecho"], ["brazoD", "Brazo izquierdo"], ["brazoI", "Brazo derecho"], ["antebD", "Antebrazo izquierdo"], ["antebI", "Antebrazo derecho"], ["manoD", "Dorso mano izquierda"], ["manoI", "Dorso mano derecha"], ["piernaD", "Pantorrilla izquierda"], ["piernaI", "Pantorrilla derecha"], ["pieD", "Talón izquierdo"], ["pieI", "Talón derecho"]]};
+const DETALLE = { "Frente": "M138 104 C126 108 112 110 99 114 M106 160 C122 172 140 171 149 162 M128 196 L148 194 M130 222 L148 221 M132 247 L148 247 M112 268 C124 290 136 306 147 322 M114 438 C121 447 131 447 137 438 M60 226 C64 232 68 234 72 233 M 162 104 C 174 108 188 110 201 114 M 194 160 C 178 172 160 171 151 162 M 172 196 L 152 194 M 170 222 L 152 221 M 168 247 L 152 247 M 188 268 C 176 290 164 306 153 322 M 186 438 C 179 447 169 447 163 438 M 240 226 C 236 232 232 234 228 233 M150 112 L150 258 M151.5 263 C151.5 265 148.5 265 148.5 263 C148.5 261 151.5 261 151.5 263", "Espalda": "M114 128 C108 150 114 170 128 176 C138 160 140 140 134 124 M100 318 C116 344 136 346 149 336 M116 452 C124 456 132 456 137 452 M140 290 C142 293 145 293 146 290 M 186 128 C 192 150 186 170 172 176 C 162 160 160 140 166 124 M 200 318 C 184 344 164 346 151 336 M 184 452 C 176 456 168 456 163 452 M 160 290 C 158 293 155 293 154 290 M150 100 L150 300 M150 305 L150 334" };
+const NS = "http://www.w3.org/2000/svg";
 let lado = "Frente";
 let zona = null;
 
@@ -117,21 +66,20 @@ function send(type, extra) {
   window.parent.postMessage(Object.assign({ isStreamlitMessage: true, type }, extra), "*");
 }
 function altura() { send("streamlit:setFrameHeight", { height: document.body.scrollHeight + 4 }); }
-
 function etiqueta(texto, ok) {
-  const el = document.getElementById("etiqueta");
-  el.innerHTML = ok ? `<span class="ok">${texto}</span>` : `<span class="pista">${texto}</span>`;
+  document.getElementById("etiqueta").innerHTML =
+    ok ? `<span class="ok">${texto}</span>` : `<span class="pista">${texto}</span>`;
 }
 
 function dibujar() {
+  document.getElementById("detalle").setAttribute("d", DETALLE[lado]);
   const g = document.getElementById("zonas");
   g.innerHTML = "";
-  for (const [forma, nombre] of VISTAS[lado]) {
-    const tmp = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    tmp.innerHTML = F[forma];
-    const el = tmp.firstElementChild;
+  for (const [id, nombre] of VISTAS[lado]) {
+    const el = document.createElementNS(NS, "path");
+    el.setAttribute("d", ZONAS[id]);
     el.setAttribute("class", "zona" + (nombre === zona ? " sel" : ""));
-    const t = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    const t = document.createElementNS(NS, "title");
     t.textContent = nombre;
     el.appendChild(t);
     el.addEventListener("mouseenter", () => { if (!zona) etiqueta(nombre, false); });
