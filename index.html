@@ -1,0 +1,544 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tattoo Lovers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Una columna de pasos numerados sobre fondo de tinta con brillo rojo; estética de estudio (negro, rojo, blanco). */
+:root {
+  --tinta: #0b0b0b;
+  --carbon: #151515;
+  --linea: #2f2a2a;
+  --rojo: #e10600;
+  --rojo-claro: #ff4a40;
+  --hueso: #f6f3f2;
+  --gris: #b9b2b1;
+  --aviso-fondo: #2a1a0a;
+  --aviso-texto: #ffc98a;
+  --info-fondo: #14202e;
+  --info-texto: #a9cdf5;
+  --blanco: #ffffff;
+  --texto: "Source Sans 3", "Source Sans Pro", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(225,6,0,.38), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(225,6,0,.16), transparent 45%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.018) 0 2px, transparent 2px 14px),
+    var(--tinta);
+  background-attachment: fixed;
+  color: var(--hueso);
+  font-family: var(--texto);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.pagina {
+  max-width: 720px; margin: 0 auto;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 8px;
+}
+.hero { text-align: center; padding-block: 8px 4px; }
+.logo { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 14px rgba(225,6,0,.45)); }
+.sub { color: var(--gris); margin: 10px 0 0; font-size: 17px; text-wrap: balance; }
+.linea-roja { height: 2px; margin: 18px auto 0; width: 70%; background: linear-gradient(90deg, transparent, var(--rojo), transparent); }
+
+h2 {
+  font-size: 1.55rem; line-height: 1.2; margin: 28px 0 10px; font-weight: 700; text-wrap: balance;
+  border-left: 4px solid var(--rojo); padding-left: 12px;
+}
+h2 .num { color: var(--rojo); }
+.nota { color: var(--gris); font-size: 15px; margin: 0 0 12px; }
+
+/* ---- muñeco (del componente) ---- */
+  .cuerpo-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 6px 0 4px; }
+  .toggle { display: inline-flex; background: #161616; border: 1px solid #3a3a3a; border-radius: 999px; padding: 4px; }
+  .toggle button {
+    appearance: none; border: 0; background: transparent; color: #cfcfcf; font: inherit; font-size: 15px; font-weight: 600;
+    padding: 8px 22px; border-radius: 999px; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .toggle button.on { background: var(--rojo); color: var(--blanco); box-shadow: 0 0 14px rgba(225,6,0,.55); }
+  .lienzo { position: relative; width: 100%; max-width: 300px; }
+  svg { display: block; width: 100%; height: auto; -webkit-tap-highlight-color: transparent; user-select: none; }
+  svg.marcar { touch-action: none; cursor: crosshair; border-radius: 16px; outline: 1px dashed #5a5a5a; }
+  .borde path { fill: none; stroke: #8a8a8a; stroke-width: 3; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .relleno path { fill: url(#piel); stroke: none; }
+  .detalle { fill: none; stroke: #a3a3a3; stroke-width: 1.1; stroke-linecap: round; opacity: .85; vector-effect: non-scaling-stroke; }
+  .zona { fill: rgba(225,6,0,0); cursor: pointer; transition: fill .15s; }
+  .zona:hover { fill: rgba(225,6,0,.28); }
+  .zona.sel { fill: rgba(225,6,0,.82); }
+  svg.marcar .zona { pointer-events: none; }
+  svg.marcar .zona.sel { fill: rgba(225,6,0,.30); }
+  #marca { fill: rgba(15,15,15,.62); stroke: #fff; stroke-width: 2; stroke-dasharray: 6 4; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .etiqueta { min-height: 26px; font-size: 17px; font-weight: 700; letter-spacing: .3px; text-align: center; padding: 0 8px; }
+  .etiqueta .pista { color: #b5b5b5; font-weight: 400; font-size: 15px; }
+  .etiqueta .ok::before { content: "✔ "; color: var(--rojo-claro); }
+  .etiqueta .medida { display: block; color: #ff6b63; font-size: 16px; margin-top: 4px; }
+  .acciones { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .acciones button {
+    appearance: none; font: inherit; font-size: 14px; font-weight: 600; color: #fff; background: #161616;
+    border: 1px solid #3a3a3a; border-radius: 999px; padding: 7px 16px; cursor: pointer;
+  }
+  .acciones button:hover { border-color: var(--rojo); }
+  [hidden] { display: none !important; }
+
+.cuerpo-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+/* ---- tamaños ---- */
+.pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+  appearance: none; font: inherit; font-size: 16px; color: var(--hueso); background: var(--carbon);
+  border: 1px solid var(--linea); border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.pill:hover { border-color: var(--rojo); }
+.pill[aria-pressed="true"] { border-color: var(--rojo); color: var(--rojo-claro); box-shadow: 0 0 12px rgba(225,6,0,.35); }
+
+/* ---- estilos ---- */
+.estilos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.estilo {
+  appearance: none; font: inherit; color: var(--hueso); background: none; border: 0; padding: 0; cursor: pointer;
+  display: flex; flex-direction: column; gap: 10px; text-align: center;
+}
+.estilo img {
+  width: 100%; max-width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; display: block;
+  border: 2px solid transparent; transition: border-color .15s, box-shadow .15s;
+}
+.estilo span {
+  display: block; border-radius: 999px; padding: 9px 12px; font-weight: 600;
+  background: var(--carbon); border: 1px solid var(--linea);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.estilo:hover span { border-color: var(--rojo); }
+.estilo[aria-pressed="true"] img { border-color: var(--rojo); box-shadow: 0 0 18px rgba(225,6,0,.5); }
+.estilo[aria-pressed="true"] span { background: var(--rojo); border-color: var(--rojo); color: var(--blanco); box-shadow: 0 0 16px rgba(225,6,0,.5); }
+
+/* ---- datos ---- */
+.campos { display: flex; flex-direction: column; gap: 14px; }
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo label { font-size: 16px; }
+input[type="text"], input[type="tel"], textarea {
+  font: inherit; color: var(--hueso); background: #1a1a1a; border: 1px solid var(--linea);
+  border-radius: 10px; padding: 12px 14px; width: 100%;
+}
+textarea { min-height: 110px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--rojo); box-shadow: 0 0 0 3px rgba(225,6,0,.25); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--rojo); margin-top: 2px; flex: none; }
+
+/* ---- resumen y envío ---- */
+.resumen { margin-top: 18px; background: var(--carbon); border: 1px solid var(--linea); border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+.resumen b { color: var(--rojo-claro); }
+.enviar {
+  display: block; text-align: center; text-decoration: none; margin-top: 16px;
+  background: var(--rojo); color: var(--blanco); font-weight: 700; font-size: 18px;
+  border-radius: 999px; padding: 14px 18px; box-shadow: 0 0 18px rgba(225,6,0,.5);
+}
+.enviar[aria-disabled="true"] { background: #3a1513; color: #c9a9a6; box-shadow: none; cursor: not-allowed; }
+.caja { border-radius: 12px; padding: 12px 16px; font-size: 16px; margin-top: 14px; }
+.caja.aviso { background: var(--aviso-fondo); color: var(--aviso-texto); }
+.caja.info { background: var(--info-fondo); color: var(--info-texto); }
+
+button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 2px solid var(--rojo-claro); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="pagina">
+  <header class="hero">
+    <img class="logo" src="logo.webp" alt="Tattoo Lovers">
+    <p class="sub">Pide tu cotización en 4 pasos y recibe respuesta por WhatsApp</p>
+    <div class="linea-roja"></div>
+  </header>
+
+  <section>
+    <h2><span class="num">1.</span> ¿Dónde te lo quieres hacer?</h2>
+    <div class="cuerpo-wrap">
+  <div class="toggle">
+    <button id="btn-frente" class="on" type="button">De frente</button>
+    <button id="btn-espalda" type="button">De espalda</button>
+  </div>
+  <div class="lienzo">
+    <svg id="svg" viewBox="-6 4 312 596" xmlns="http://www.w3.org/2000/svg" aria-label="Figura del cuerpo">
+      <defs>
+        <linearGradient id="piel" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#bfbfbf"/>
+          <stop offset=".3" stop-color="#f4f4f4"/>
+          <stop offset=".5" stop-color="#ffffff"/>
+          <stop offset=".7" stop-color="#f4f4f4"/>
+          <stop offset="1" stop-color="#bfbfbf"/>
+        </linearGradient>
+        <radialGradient id="halo" cx="50%" cy="45%" r="55%">
+          <stop offset="0" stop-color="rgba(225,6,0,.30)"/><stop offset="1" stop-color="rgba(225,6,0,0)"/>
+        </radialGradient>
+        <clipPath id="silueta"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></clipPath>
+      </defs>
+      <ellipse cx="150" cy="300" rx="150" ry="290" fill="url(#halo)" pointer-events="none"/>
+      <g class="borde"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></g>
+      <g class="relleno" id="relleno"><path d="M150 20 C165 20 174 33 174 50 C174 64 168 76 157 82 C153 84 147 84 143 82 C132 76 126 64 126 50 C126 33 135 20 150 20 Z"/><path d="M126 48 C120 46 119 58 125 62 Z M174 48 C180 46 181 58 175 62 Z"/><path d="M137 74 L135 100 L165 100 L163 74 Z"/><path d="M150 96 L136 98 C118 103 100 105 92 113 C84 122 88 140 96 160 C101 190 106 220 106 250 C105 268 98 285 97 305 C95 345 99 385 107 425 C111 440 111 452 109 465 C102 488 108 525 117 556 L113 578 C117 589 136 589 142 580 L138 558 C141 525 143 490 139 462 C137 450 138 440 140 425 C146 390 148 360 148 338 L150 336 L152 338 C152 360 154 390 160 425 C162 440 163 450 161 462 C157 490 159 525 162 558 L158 580 C164 589 183 589 187 578 L183 556 C192 525 198 488 191 465 C189 452 189 440 193 425 C201 385 205 345 203 305 C202 285 195 268 194 250 C194 220 199 190 204 160 C212 140 216 122 208 113 C200 105 182 103 164 98 L150 96 Z"/><path d="M92 112 C72 115 64 140 65 162 C62 190 56 210 52 232 C46 262 38 290 31 312 L45 316 C53 292 63 266 71 240 C77 214 85 190 93 168 Z"/><path d="M 208 112 C 228 115 236 140 235 162 C 238 190 244 210 248 232 C 254 262 262 290 269 312 L 255 316 C 247 292 237 266 229 240 C 223 214 215 190 207 168 Z"/><path d="M93 110 C76 110 64 124 63 146 C63 160 70 168 80 166 C90 150 96 130 98 116 Z"/><path d="M 207 110 C 224 110 236 124 237 146 C 237 160 230 168 220 166 C 210 150 204 130 202 116 Z"/><path d="M31 309 C22 320 13 334 9 350 C8 356 13 359 17 353 L15 367 C15 373 21 373 23 367 L24 373 C26 379 32 378 32 372 L33 374 C35 380 41 378 41 371 C43 356 46 336 46 314 Z M45 318 C52 325 55 334 52 343 C50 347 45 345 45 340 Z"/><path d="M 269 309 C 278 320 287 334 291 350 C 292 356 287 359 283 353 L 285 367 C 285 373 279 373 277 367 L 276 373 C 274 379 268 378 268 372 L 267 374 C 265 380 259 378 259 371 C 257 356 254 336 254 314 Z M 255 318 C 248 325 245 334 248 343 C 250 347 255 345 255 340 Z"/></g>
+      <path id="detalle" class="detalle" d=""/>
+      <g id="zonas" clip-path="url(#silueta)"></g>
+      <rect id="marca" x="0" y="0" width="0" height="0" rx="3" hidden/>
+    </svg>
+  </div>
+  <div class="etiqueta" id="etiqueta"></div>
+  <div class="acciones">
+    <button id="btn-marcar" type="button" hidden>✏️ Marcar el tamaño</button>
+    <button id="btn-borrar" type="button" hidden>🗑️ Borrar marca</button>
+    <button id="btn-volver" type="button" hidden>↩️ Ver cuerpo completo</button>
+  </div>
+</div>
+
+  </section>
+
+  <section>
+    <h2><span class="num">2.</span> ¿De qué tamaño?</h2>
+    <p class="nota" id="nota-tamano">Si no sabes, vuelve al muñequito y marca con el dedo el tamaño sobre el cuerpo.</p>
+    <div class="pills" id="tamanos" role="group" aria-label="Tamaño"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">3.</span> Elige un estilo</h2>
+    <div class="estilos" id="estilos"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">4.</span> Tus datos</h2>
+    <form class="campos" id="form" autocomplete="on">
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" autocomplete="name">
+      </div>
+      <div class="campo">
+        <label for="telefono">Tu WhatsApp</label>
+        <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel">
+      </div>
+      <div class="campo">
+        <label for="idea">Cuéntanos tu idea (opcional)</label>
+        <textarea id="idea" name="idea"></textarea>
+      </div>
+      <label class="check" for="foto">
+        <input type="checkbox" id="foto" name="foto">
+        <span>📷 Tengo una foto o dibujo de ejemplo para enviar</span>
+      </label>
+    </form>
+
+    <div class="resumen" id="resumen"></div>
+    <a class="enviar" id="enviar" href="#" target="_blank" rel="noopener" aria-disabled="true">📲 Enviar cotización por WhatsApp</a>
+    <div class="caja aviso" id="falta"></div>
+    <div class="caja info" id="info-foto" hidden>📎 Cuando se abra WhatsApp, envía el mensaje y después adjunta tu foto en el mismo chat (toca el clip 📎 o la cámara).</div>
+  </section>
+</main>
+
+<script>
+(function () {
+
+const ZONAS = {"cabeza": "M110 10 L190 10 L190 76 L110 76 Z", "cuello": "M118 76 L182 76 L182 102 L118 102 Z", "pecho": "M100 102 L200 102 L200 172 L100 172 Z", "abdomen": "M114 172 L186 172 L186 264 L114 264 Z", "ladoD": "M88 172 L114 172 L114 264 L92 264 Z", "cadera": "M88 264 L212 264 L212 314 L88 314 Z", "hombroD": "M40 98 L100 98 L100 172 L96 172 L60 170 Z", "brazoD": "M20 166 L96 164 L82 240 L20 240 Z", "antebD": "M0 240 L82 240 L58 313 L0 313 Z", "manoD": "M0 313 L62 313 L62 400 L0 400 Z", "musloD": "M60 314 L150 314 L150 446 L60 446 Z", "piernaD": "M60 446 L150 446 L150 560 L60 560 Z", "pieD": "M60 560 L150 560 L150 600 L60 600 Z", "gluteoD": "M88 268 L150 268 L150 338 L96 338 Z", "ladoI": "M212 172 L186 172 L186 264 L208 264 Z", "hombroI": "M260 98 L200 98 L200 172 L204 172 L240 170 Z", "brazoI": "M280 166 L204 164 L218 240 L280 240 Z", "antebI": "M300 240 L218 240 L242 313 L300 313 Z", "manoI": "M300 313 L238 313 L238 400 L300 400 Z", "musloI": "M240 314 L150 314 L150 446 L240 446 Z", "piernaI": "M240 446 L150 446 L150 560 L240 560 Z", "pieI": "M240 560 L150 560 L150 600 L240 600 Z", "gluteoI": "M212 268 L150 268 L150 338 L204 338 Z"};
+const VISTAS = {"Frente": [["cabeza", "Cabeza / Cara"], ["cuello", "Cuello"], ["pecho", "Pecho"], ["abdomen", "Abdomen"], ["ladoD", "Costillas derecha"], ["ladoI", "Costillas izquierda"], ["cadera", "Cadera / Pelvis"], ["hombroD", "Hombro derecho"], ["hombroI", "Hombro izquierdo"], ["brazoD", "Brazo derecho"], ["brazoI", "Brazo izquierdo"], ["antebD", "Antebrazo derecho"], ["antebI", "Antebrazo izquierdo"], ["manoD", "Mano derecha"], ["manoI", "Mano izquierda"], ["musloD", "Muslo derecho"], ["musloI", "Muslo izquierdo"], ["piernaD", "Canilla derecha"], ["piernaI", "Canilla izquierda"], ["pieD", "Pie derecho"], ["pieI", "Pie izquierdo"]], "Espalda": [["cabeza", "Cabeza"], ["cuello", "Nuca"], ["pecho", "Espalda alta / Omóplatos"], ["abdomen", "Espalda baja"], ["ladoD", "Costado izquierdo"], ["ladoI", "Costado derecho"], ["musloD", "Muslo izquierdo"], ["musloI", "Muslo derecho"], ["gluteoD", "Glúteo izquierdo"], ["gluteoI", "Glúteo derecho"], ["hombroD", "Hombro izquierdo"], ["hombroI", "Hombro derecho"], ["brazoD", "Brazo izquierdo"], ["brazoI", "Brazo derecho"], ["antebD", "Antebrazo izquierdo"], ["antebI", "Antebrazo derecho"], ["manoD", "Dorso mano izquierda"], ["manoI", "Dorso mano derecha"], ["piernaD", "Pantorrilla izquierda"], ["piernaI", "Pantorrilla derecha"], ["pieD", "Talón izquierdo"], ["pieI", "Talón derecho"]]};
+const DETALLE = { "Frente": "M138 104 C126 108 112 110 99 114 M106 160 C122 172 140 171 149 162 M128 196 L148 194 M130 222 L148 221 M132 247 L148 247 M112 268 C124 290 136 306 147 322 M114 438 C121 447 131 447 137 438 M60 226 C64 232 68 234 72 233 M 162 104 C 174 108 188 110 201 114 M 194 160 C 178 172 160 171 151 162 M 172 196 L 152 194 M 170 222 L 152 221 M 168 247 L 152 247 M 188 268 C 176 290 164 306 153 322 M 186 438 C 179 447 169 447 163 438 M 240 226 C 236 232 232 234 228 233 M150 112 L150 258 M151.5 263 C151.5 265 148.5 265 148.5 263 C148.5 261 151.5 261 151.5 263", "Espalda": "M114 128 C108 150 114 170 128 176 C138 160 140 140 134 124 M100 318 C116 344 136 346 149 336 M116 452 C124 456 132 456 137 452 M140 290 C142 293 145 293 146 290 M 186 128 C 192 150 186 170 172 176 C 162 160 160 140 166 124 M 200 318 C 184 344 164 346 151 336 M 184 452 C 176 456 168 456 163 452 M 160 290 C 158 293 155 293 154 290 M150 100 L150 300 M150 305 L150 334" };
+const NS = "http://www.w3.org/2000/svg";
+const VB_TOTAL = [-6, 4, 312, 596];
+const CM_POR_UNIDAD = 170 / 568;   // figura de ~1,70 m de alto (cabeza 20 → pies 588)
+
+const svg = document.getElementById("svg");
+const marcaEl = document.getElementById("marca");
+let lado = "Frente";
+let zona = null, zonaId = null;
+let marca = null;      // {x, y, w, h, ancho_cm, alto_cm, ubicacion}
+let modo = "elegir";   // "elegir" | "marcar"
+let vb = VB_TOTAL.slice();
+
+function send(type, extra) {
+  if (type === "streamlit:setComponentValue" && window.alCambiarCuerpo) window.alCambiarCuerpo(extra.value);
+}
+function altura() { send("streamlit:setFrameHeight", { height: document.body.scrollHeight + 4 }); }
+function enviar() { send("streamlit:setComponentValue", { value: { lado, zona, marca }, dataType: "json" }); }
+
+// ---------- utilidades geométricas ----------
+const siluetas = [...document.querySelectorAll("#relleno path")];
+function enCuerpo(x, y) {
+  const p = new DOMPoint(x, y);
+  return siluetas.some(s => s.isPointInFill(p));
+}
+const cacheCaja = {};
+function cajaZona(id) {   // caja de la parte del cuerpo dentro de la zona
+  if (cacheCaja[id]) return cacheCaja[id];
+  const tmp = document.createElementNS(NS, "path");
+  tmp.setAttribute("d", ZONAS[id]);
+  tmp.setAttribute("fill", "none");
+  svg.appendChild(tmp);
+  const b = tmp.getBBox();
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (let x = b.x; x <= b.x + b.width; x += 2) {
+    for (let y = b.y; y <= b.y + b.height; y += 2) {
+      if (tmp.isPointInFill(new DOMPoint(x, y)) && enCuerpo(x, y)) {
+        x1 = Math.min(x1, x); y1 = Math.min(y1, y); x2 = Math.max(x2, x); y2 = Math.max(y2, y);
+      }
+    }
+  }
+  svg.removeChild(tmp);
+  const caja = isFinite(x1) ? { x: x1, y: y1, w: x2 - x1, h: y2 - y1 } : { x: b.x, y: b.y, w: b.width, h: b.height };
+  return (cacheCaja[id] = caja);
+}
+function vbZona(id) {
+  const c = cajaZona(id);
+  const s = Math.max((c.w * 1.6) / VB_TOTAL[2], (c.h * 1.6) / VB_TOTAL[3], 0.38);
+  const w = VB_TOTAL[2] * s, h = VB_TOTAL[3] * s;
+  return [c.x + c.w / 2 - w / 2, c.y + c.h / 2 - h / 2, w, h];
+}
+function animarVB(destino) {
+  const inicio = vb.slice(), t0 = performance.now(), dur = 350;
+  function paso(t) {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    vb = inicio.map((v, i) => v + (destino[i] - v) * e);
+    svg.setAttribute("viewBox", vb.join(" "));
+    if (k < 1) requestAnimationFrame(paso);
+  }
+  requestAnimationFrame(paso);
+}
+function aSvg(ev) {
+  const p = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(svg.getScreenCTM().inverse());
+  return { x: p.x, y: p.y };
+}
+
+// Dónde quedó la marca dentro de la zona (arriba/abajo, adentro/afuera…)
+function ubicacion(m) {
+  const c = cajaZona(zonaId);
+  const cx = m.x + m.w / 2, cy = m.y + m.h / 2;
+  const partes = [];
+  const tv = (cy - c.y) / (c.h || 1);
+  if (tv < 0.34) partes.push("parte de arriba");
+  else if (tv > 0.66) partes.push("parte de abajo");
+  else partes.push("al medio");
+  if (/[DI]$/.test(zonaId)) {
+    const cerca = Math.min(Math.abs(c.x - 150), Math.abs(c.x + c.w - 150));
+    const lejos = Math.max(Math.abs(c.x - 150), Math.abs(c.x + c.w - 150));
+    const th = (Math.abs(cx - 150) - cerca) / ((lejos - cerca) || 1);
+    if (th < 0.4) partes.push("lado de adentro");
+    else if (th > 0.6) partes.push("lado de afuera");
+  } else {
+    const th = (cx - c.x) / (c.w || 1);
+    // de frente, la izquierda de la imagen es la derecha de la persona
+    const izqImagen = lado === "Frente" ? "lado derecho" : "lado izquierdo";
+    const derImagen = lado === "Frente" ? "lado izquierdo" : "lado derecho";
+    if (th < 0.4) partes.push(izqImagen);
+    else if (th > 0.6) partes.push(derImagen);
+    else partes.push("centrado");
+  }
+  return partes.join(", ");
+}
+
+// ---------- dibujo ----------
+function etiqueta() {
+  const el = document.getElementById("etiqueta");
+  if (!zona) { el.innerHTML = '<span class="pista">Toca la parte del cuerpo</span>'; return; }
+  let html = `<span class="ok">${zona}</span>`;
+  if (marca) html += `<span class="medida">≈ ${marca.ancho_cm} × ${marca.alto_cm} cm · ${marca.ubicacion}</span>`;
+  else if (modo === "marcar") html += '<span class="medida" style="color:#b5b5b5;font-weight:400">Desliza el dedo sobre el cuerpo para marcar el tamaño del tatuaje (opcional)</span>';
+  el.innerHTML = html;
+}
+
+function dibujar() {
+  document.getElementById("detalle").setAttribute("d", DETALLE[lado]);
+  const g = document.getElementById("zonas");
+  g.innerHTML = "";
+  for (const [id, nombre] of VISTAS[lado]) {
+    const el = document.createElementNS(NS, "path");
+    el.setAttribute("d", ZONAS[id]);
+    el.setAttribute("class", "zona" + (nombre === zona ? " sel" : ""));
+    const t = document.createElementNS(NS, "title");
+    t.textContent = nombre;
+    el.appendChild(t);
+    el.addEventListener("click", () => elegirZona(id, nombre));
+    g.appendChild(el);
+  }
+  if (marca) {
+    marcaEl.setAttribute("x", marca.x); marcaEl.setAttribute("y", marca.y);
+    marcaEl.setAttribute("width", marca.w); marcaEl.setAttribute("height", marca.h);
+    marcaEl.removeAttribute("hidden");
+  } else marcaEl.setAttribute("hidden", "");
+  svg.classList.toggle("marcar", modo === "marcar");
+  document.getElementById("btn-frente").classList.toggle("on", lado === "Frente");
+  document.getElementById("btn-espalda").classList.toggle("on", lado === "Espalda");
+  document.getElementById("btn-marcar").hidden = !(zona && modo === "elegir");
+  document.getElementById("btn-borrar").hidden = !(marca && modo === "marcar");
+  document.getElementById("btn-volver").hidden = modo !== "marcar";
+  etiqueta();
+  setTimeout(altura, 0);
+}
+
+function elegirZona(id, nombre) {
+  zona = nombre; zonaId = id; marca = null;
+  modo = "marcar";
+  dibujar();
+  animarVB(vbZona(id));
+  enviar();
+}
+
+function cambiarLado(nuevo) {
+  if (nuevo === lado) return;
+  lado = nuevo; zona = null; zonaId = null; marca = null; modo = "elegir";
+  animarVB(VB_TOTAL);
+  dibujar();
+  enviar();
+}
+
+document.getElementById("btn-frente").onclick = () => cambiarLado("Frente");
+document.getElementById("btn-espalda").onclick = () => cambiarLado("Espalda");
+document.getElementById("btn-volver").onclick = () => { modo = "elegir"; animarVB(VB_TOTAL); dibujar(); };
+document.getElementById("btn-marcar").onclick = () => { modo = "marcar"; animarVB(vbZona(zonaId)); dibujar(); };
+document.getElementById("btn-borrar").onclick = () => { marca = null; dibujar(); enviar(); };
+
+// ---------- marcar el tamaño con el dedo ----------
+let inicio = null;
+svg.addEventListener("pointerdown", (ev) => {
+  if (modo !== "marcar") return;
+  ev.preventDefault();
+  svg.setPointerCapture(ev.pointerId);
+  inicio = aSvg(ev);
+});
+svg.addEventListener("pointermove", (ev) => {
+  if (!inicio) return;
+  const p = aSvg(ev);
+  const x = Math.min(inicio.x, p.x), y = Math.min(inicio.y, p.y);
+  const w = Math.abs(p.x - inicio.x), h = Math.abs(p.y - inicio.y);
+  marcaEl.setAttribute("x", x); marcaEl.setAttribute("y", y);
+  marcaEl.setAttribute("width", w); marcaEl.setAttribute("height", h);
+  marcaEl.removeAttribute("hidden");
+  const el = document.getElementById("etiqueta");
+  el.innerHTML = `<span class="ok">${zona}</span><span class="medida">≈ ${Math.max(1, Math.round(w * CM_POR_UNIDAD))} × ${Math.max(1, Math.round(h * CM_POR_UNIDAD))} cm</span>`;
+});
+function terminar(ev) {
+  if (!inicio) return;
+  const p = aSvg(ev);
+  const m = { x: Math.min(inicio.x, p.x), y: Math.min(inicio.y, p.y), w: Math.abs(p.x - inicio.x), h: Math.abs(p.y - inicio.y) };
+  inicio = null;
+  if (m.w * CM_POR_UNIDAD < 0.8 && m.h * CM_POR_UNIDAD < 0.8) { dibujar(); return; }  // fue un toque, no un trazo
+  m.ancho_cm = Math.max(1, Math.round(m.w * CM_POR_UNIDAD));
+  m.alto_cm = Math.max(1, Math.round(m.h * CM_POR_UNIDAD));
+  ["x", "y", "w", "h"].forEach(k => m[k] = Math.round(m[k] * 10) / 10);
+  marca = m;
+  marca.ubicacion = ubicacion(m);
+  dibujar();
+  enviar();
+}
+svg.addEventListener("pointerup", terminar);
+svg.addEventListener("pointercancel", () => { inicio = null; dibujar(); });
+
+
+dibujar();
+})();
+</script>
+<script>
+(function () {
+  const DATOS = {"whatsapp": "595972815410", "estudio": "Tattoo Lovers", "tamanos": ["0 a 5 cm", "5 a 10 cm", "10 a 15 cm", "15 a 20 cm", "20 a 25 cm", "Más de 25 cm"], "estilos": [{"nombre": "Black and Gray", "foto": "estilos/black_and_gray.jpg"}, {"nombre": "Anime", "foto": "estilos/anime.jpg"}, {"nombre": "Anime a color", "foto": "estilos/anime_color.jpg"}, {"nombre": "Colorido", "foto": "estilos/colorido.jpg"}, {"nombre": "Maorí", "foto": "estilos/maori.jpg"}, {"nombre": "Japonés", "foto": "estilos/japones.jpg"}, {"nombre": "Realismo", "foto": "estilos/realismo.jpg"}, {"nombre": "Retrato", "foto": "estilos/retrato.jpg"}, {"nombre": "Minimalista / Línea fina", "foto": "estilos/minimalista.jpg"}, {"nombre": "Old School", "foto": "estilos/old_school.jpg"}, {"nombre": "Lettering", "foto": "estilos/lettering.jpg"}, {"nombre": "Geométrico", "foto": "estilos/geometrico.jpg"}, {"nombre": "Blackwork", "foto": "estilos/blackwork.jpg"}, {"nombre": "Acuarela", "foto": "estilos/acuarela.jpg"}, {"nombre": "Tribal", "foto": "estilos/tribal.jpg"}]};
+  const estado = { cuerpo: { lado: "Frente", zona: null, marca: null }, tamano: null, estilo: null };
+  const $ = (id) => document.getElementById(id);
+
+  function tamanoPara(cm) {
+    const limites = [5, 10, 15, 20, 25];
+    for (let i = 0; i < limites.length; i++) if (cm <= limites[i]) return DATOS.tamanos[i];
+    return DATOS.tamanos[DATOS.tamanos.length - 1];
+  }
+
+  // muñeco -> página
+  window.alCambiarCuerpo = function (v) {
+    const anterior = estado.cuerpo.marca;
+    estado.cuerpo = v;
+    if (v.marca && (!anterior || anterior.ancho_cm !== v.marca.ancho_cm || anterior.alto_cm !== v.marca.alto_cm)) {
+      estado.tamano = tamanoPara(Math.max(v.marca.ancho_cm, v.marca.alto_cm));
+    }
+    pintar();
+  };
+
+  // tamaños
+  const contTam = $("tamanos");
+  DATOS.tamanos.forEach((t) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "pill"; b.textContent = t; b.id = "tam-" + t.replace(/\W+/g, "-");
+    b.addEventListener("click", () => { estado.tamano = estado.tamano === t ? null : t; pintar(); });
+    contTam.appendChild(b);
+  });
+
+  // estilos
+  const contEst = $("estilos");
+  DATOS.estilos.forEach((e) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "estilo"; b.dataset.nombre = e.nombre;
+    if (e.foto) {
+      const img = document.createElement("img");
+      img.src = e.foto; img.alt = "Ejemplo de tatuaje estilo " + e.nombre; img.loading = "lazy";
+      b.appendChild(img);
+    }
+    const s = document.createElement("span"); s.textContent = e.nombre; b.appendChild(s);
+    b.addEventListener("click", () => { estado.estilo = e.nombre; pintar(); });
+    contEst.appendChild(b);
+  });
+
+  ["nombre", "telefono", "idea", "foto"].forEach((id) => $(id).addEventListener("input", pintar));
+  $("foto").addEventListener("change", pintar);
+  $("form").addEventListener("submit", (ev) => ev.preventDefault());
+
+  function mensaje() {
+    const c = estado.cuerpo;
+    const l = [
+      `*Nueva cotización - ${DATOS.estudio}*`,
+      `Nombre: ${$("nombre").value.trim()}`,
+      `Teléfono: ${$("telefono").value.trim()}`,
+      `Zona del cuerpo: ${c.zona} (${c.lado.toLowerCase()})`,
+      `Tamaño: ${estado.tamano}`,
+    ];
+    if (c.marca) l.push(`Marcado en el cuerpo: aprox. ${c.marca.ancho_cm} x ${c.marca.alto_cm} cm (${c.marca.ubicacion})`);
+    l.push(`Estilo: ${estado.estilo}`);
+    const idea = $("idea").value.trim();
+    if (idea) l.push(`Idea / detalles: ${idea}`);
+    if ($("foto").checked) l.push("📎 Te envío una foto de ejemplo a continuación.");
+    return l.join("\n");
+  }
+
+  function texto(el, t) { el.textContent = t; return el; }
+
+  function pintar() {
+    const c = estado.cuerpo;
+    [...contTam.children].forEach((b) => b.setAttribute("aria-pressed", String(b.textContent === estado.tamano)));
+    [...contEst.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nombre === estado.estilo)));
+    $("nota-tamano").textContent = c.marca
+      ? `Según lo que marcaste: aprox. ${c.marca.ancho_cm} × ${c.marca.alto_cm} cm. Puedes cambiarlo si quieres.`
+      : "Si no sabes, vuelve al muñequito y marca con el dedo el tamaño sobre el cuerpo.";
+
+    const r = $("resumen"); r.replaceChildren();
+    const fila = (k, v) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = k + ": "; d.append(b, v); r.appendChild(d); };
+    fila("Zona", c.zona ? `${c.zona} (${c.lado.toLowerCase()})` : "—");
+    fila("Tamaño", (estado.tamano || "—") + (c.marca ? ` (marcado: ≈ ${c.marca.ancho_cm} × ${c.marca.alto_cm} cm, ${c.marca.ubicacion})` : ""));
+    fila("Estilo", estado.estilo || "—");
+
+    const falta = [];
+    if (!c.zona) falta.push("la zona del cuerpo");
+    if (!estado.tamano) falta.push("el tamaño");
+    if (!estado.estilo) falta.push("un estilo");
+    if (!$("nombre").value.trim()) falta.push("tu nombre");
+    if (!$("telefono").value.trim()) falta.push("tu WhatsApp");
+
+    const a = $("enviar");
+    if (falta.length) {
+      a.setAttribute("aria-disabled", "true"); a.href = "#";
+      $("falta").hidden = false;
+      texto($("falta"), "Para enviar, falta completar: " + falta.join(", ") + ".");
+      $("info-foto").hidden = true;
+    } else {
+      a.setAttribute("aria-disabled", "false");
+      a.href = `https://wa.me/${DATOS.whatsapp}?text=${encodeURIComponent(mensaje())}`;
+      $("falta").hidden = true;
+      $("info-foto").hidden = !$("foto").checked;
+    }
+  }
+  $("enviar").addEventListener("click", (ev) => { if ($("enviar").getAttribute("aria-disabled") === "true") ev.preventDefault(); });
+
+  pintar();
+})();
+</script>

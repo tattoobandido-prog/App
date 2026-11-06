@@ -1,0 +1,283 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tattoo Lovers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Una columna de pasos numerados sobre fondo de tinta con brillo rojo; estética de estudio (negro, rojo, blanco). */
+:root {
+  --tinta: #0b0b0b;
+  --carbon: #151515;
+  --linea: #2f2a2a;
+  --rojo: #e10600;
+  --rojo-claro: #ff4a40;
+  --hueso: #f6f3f2;
+  --gris: #b9b2b1;
+  --aviso-fondo: #2a1a0a;
+  --aviso-texto: #ffc98a;
+  --info-fondo: #14202e;
+  --info-texto: #a9cdf5;
+  --blanco: #ffffff;
+  --texto: "Source Sans 3", "Source Sans Pro", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(225,6,0,.38), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(225,6,0,.16), transparent 45%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.018) 0 2px, transparent 2px 14px),
+    var(--tinta);
+  background-attachment: fixed;
+  color: var(--hueso);
+  font-family: var(--texto);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.pagina {
+  max-width: 720px; margin: 0 auto;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 8px;
+}
+.hero { text-align: center; padding-block: 8px 4px; }
+.logo { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 14px rgba(225,6,0,.45)); }
+.sub { color: var(--gris); margin: 10px 0 0; font-size: 17px; text-wrap: balance; }
+.linea-roja { height: 2px; margin: 18px auto 0; width: 70%; background: linear-gradient(90deg, transparent, var(--rojo), transparent); }
+
+h2 {
+  font-size: 1.55rem; line-height: 1.2; margin: 28px 0 10px; font-weight: 700; text-wrap: balance;
+  border-left: 4px solid var(--rojo); padding-left: 12px;
+}
+h2 .num { color: var(--rojo); }
+.nota { color: var(--gris); font-size: 15px; margin: 0 0 12px; }
+
+/* ---- muñeco (del componente) ---- */
+/*__CSS_CUERPO__*/
+.cuerpo-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+/* ---- tamaños ---- */
+.pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+  appearance: none; font: inherit; font-size: 16px; color: var(--hueso); background: var(--carbon);
+  border: 1px solid var(--linea); border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.pill:hover { border-color: var(--rojo); }
+.pill[aria-pressed="true"] { border-color: var(--rojo); color: var(--rojo-claro); box-shadow: 0 0 12px rgba(225,6,0,.35); }
+
+/* ---- estilos ---- */
+.estilos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.estilo {
+  appearance: none; font: inherit; color: var(--hueso); background: none; border: 0; padding: 0; cursor: pointer;
+  display: flex; flex-direction: column; gap: 10px; text-align: center;
+}
+.estilo img {
+  width: 100%; max-width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; display: block;
+  border: 2px solid transparent; transition: border-color .15s, box-shadow .15s;
+}
+.estilo span {
+  display: block; border-radius: 999px; padding: 9px 12px; font-weight: 600;
+  background: var(--carbon); border: 1px solid var(--linea);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.estilo:hover span { border-color: var(--rojo); }
+.estilo[aria-pressed="true"] img { border-color: var(--rojo); box-shadow: 0 0 18px rgba(225,6,0,.5); }
+.estilo[aria-pressed="true"] span { background: var(--rojo); border-color: var(--rojo); color: var(--blanco); box-shadow: 0 0 16px rgba(225,6,0,.5); }
+
+/* ---- datos ---- */
+.campos { display: flex; flex-direction: column; gap: 14px; }
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo label { font-size: 16px; }
+input[type="text"], input[type="tel"], textarea {
+  font: inherit; color: var(--hueso); background: #1a1a1a; border: 1px solid var(--linea);
+  border-radius: 10px; padding: 12px 14px; width: 100%;
+}
+textarea { min-height: 110px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--rojo); box-shadow: 0 0 0 3px rgba(225,6,0,.25); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--rojo); margin-top: 2px; flex: none; }
+
+/* ---- resumen y envío ---- */
+.resumen { margin-top: 18px; background: var(--carbon); border: 1px solid var(--linea); border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+.resumen b { color: var(--rojo-claro); }
+.enviar {
+  display: block; text-align: center; text-decoration: none; margin-top: 16px;
+  background: var(--rojo); color: var(--blanco); font-weight: 700; font-size: 18px;
+  border-radius: 999px; padding: 14px 18px; box-shadow: 0 0 18px rgba(225,6,0,.5);
+}
+.enviar[aria-disabled="true"] { background: #3a1513; color: #c9a9a6; box-shadow: none; cursor: not-allowed; }
+.caja { border-radius: 12px; padding: 12px 16px; font-size: 16px; margin-top: 14px; }
+.caja.aviso { background: var(--aviso-fondo); color: var(--aviso-texto); }
+.caja.info { background: var(--info-fondo); color: var(--info-texto); }
+
+button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 2px solid var(--rojo-claro); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="pagina">
+  <header class="hero">
+    <img class="logo" src="logo.webp" alt="Tattoo Lovers">
+    <p class="sub">Pide tu cotización en 4 pasos y recibe respuesta por WhatsApp</p>
+    <div class="linea-roja"></div>
+  </header>
+
+  <section>
+    <h2><span class="num">1.</span> ¿Dónde te lo quieres hacer?</h2>
+    <!--__CUERPO__-->
+  </section>
+
+  <section>
+    <h2><span class="num">2.</span> ¿De qué tamaño?</h2>
+    <p class="nota" id="nota-tamano">Si no sabes, vuelve al muñequito y marca con el dedo el tamaño sobre el cuerpo.</p>
+    <div class="pills" id="tamanos" role="group" aria-label="Tamaño"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">3.</span> Elige un estilo</h2>
+    <div class="estilos" id="estilos"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">4.</span> Tus datos</h2>
+    <form class="campos" id="form" autocomplete="on">
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" autocomplete="name">
+      </div>
+      <div class="campo">
+        <label for="telefono">Tu WhatsApp</label>
+        <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel">
+      </div>
+      <div class="campo">
+        <label for="idea">Cuéntanos tu idea (opcional)</label>
+        <textarea id="idea" name="idea"></textarea>
+      </div>
+      <label class="check" for="foto">
+        <input type="checkbox" id="foto" name="foto">
+        <span>📷 Tengo una foto o dibujo de ejemplo para enviar</span>
+      </label>
+    </form>
+
+    <div class="resumen" id="resumen"></div>
+    <a class="enviar" id="enviar" href="#" target="_blank" rel="noopener" aria-disabled="true">📲 Enviar cotización por WhatsApp</a>
+    <div class="caja aviso" id="falta"></div>
+    <div class="caja info" id="info-foto" hidden>📎 Cuando se abra WhatsApp, envía el mensaje y después adjunta tu foto en el mismo chat (toca el clip 📎 o la cámara).</div>
+  </section>
+</main>
+
+<script>
+/*__JS_CUERPO__*/
+</script>
+<script>
+(function () {
+  const DATOS = __DATOS__;
+  const estado = { cuerpo: { lado: "Frente", zona: null, marca: null }, tamano: null, estilo: null };
+  const $ = (id) => document.getElementById(id);
+
+  function tamanoPara(cm) {
+    const limites = [5, 10, 15, 20, 25];
+    for (let i = 0; i < limites.length; i++) if (cm <= limites[i]) return DATOS.tamanos[i];
+    return DATOS.tamanos[DATOS.tamanos.length - 1];
+  }
+
+  // muñeco -> página
+  window.alCambiarCuerpo = function (v) {
+    const anterior = estado.cuerpo.marca;
+    estado.cuerpo = v;
+    if (v.marca && (!anterior || anterior.ancho_cm !== v.marca.ancho_cm || anterior.alto_cm !== v.marca.alto_cm)) {
+      estado.tamano = tamanoPara(Math.max(v.marca.ancho_cm, v.marca.alto_cm));
+    }
+    pintar();
+  };
+
+  // tamaños
+  const contTam = $("tamanos");
+  DATOS.tamanos.forEach((t) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "pill"; b.textContent = t; b.id = "tam-" + t.replace(/\W+/g, "-");
+    b.addEventListener("click", () => { estado.tamano = estado.tamano === t ? null : t; pintar(); });
+    contTam.appendChild(b);
+  });
+
+  // estilos
+  const contEst = $("estilos");
+  DATOS.estilos.forEach((e) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "estilo"; b.dataset.nombre = e.nombre;
+    if (e.foto) {
+      const img = document.createElement("img");
+      img.src = e.foto; img.alt = "Ejemplo de tatuaje estilo " + e.nombre; img.loading = "lazy";
+      b.appendChild(img);
+    }
+    const s = document.createElement("span"); s.textContent = e.nombre; b.appendChild(s);
+    b.addEventListener("click", () => { estado.estilo = e.nombre; pintar(); });
+    contEst.appendChild(b);
+  });
+
+  ["nombre", "telefono", "idea", "foto"].forEach((id) => $(id).addEventListener("input", pintar));
+  $("foto").addEventListener("change", pintar);
+  $("form").addEventListener("submit", (ev) => ev.preventDefault());
+
+  function mensaje() {
+    const c = estado.cuerpo;
+    const l = [
+      `*Nueva cotización - ${DATOS.estudio}*`,
+      `Nombre: ${$("nombre").value.trim()}`,
+      `Teléfono: ${$("telefono").value.trim()}`,
+      `Zona del cuerpo: ${c.zona} (${c.lado.toLowerCase()})`,
+      `Tamaño: ${estado.tamano}`,
+    ];
+    if (c.marca) l.push(`Marcado en el cuerpo: aprox. ${c.marca.ancho_cm} x ${c.marca.alto_cm} cm (${c.marca.ubicacion})`);
+    l.push(`Estilo: ${estado.estilo}`);
+    const idea = $("idea").value.trim();
+    if (idea) l.push(`Idea / detalles: ${idea}`);
+    if ($("foto").checked) l.push("📎 Te envío una foto de ejemplo a continuación.");
+    return l.join("\n");
+  }
+
+  function texto(el, t) { el.textContent = t; return el; }
+
+  function pintar() {
+    const c = estado.cuerpo;
+    [...contTam.children].forEach((b) => b.setAttribute("aria-pressed", String(b.textContent === estado.tamano)));
+    [...contEst.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.nombre === estado.estilo)));
+    $("nota-tamano").textContent = c.marca
+      ? `Según lo que marcaste: aprox. ${c.marca.ancho_cm} × ${c.marca.alto_cm} cm. Puedes cambiarlo si quieres.`
+      : "Si no sabes, vuelve al muñequito y marca con el dedo el tamaño sobre el cuerpo.";
+
+    const r = $("resumen"); r.replaceChildren();
+    const fila = (k, v) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = k + ": "; d.append(b, v); r.appendChild(d); };
+    fila("Zona", c.zona ? `${c.zona} (${c.lado.toLowerCase()})` : "—");
+    fila("Tamaño", (estado.tamano || "—") + (c.marca ? ` (marcado: ≈ ${c.marca.ancho_cm} × ${c.marca.alto_cm} cm, ${c.marca.ubicacion})` : ""));
+    fila("Estilo", estado.estilo || "—");
+
+    const falta = [];
+    if (!c.zona) falta.push("la zona del cuerpo");
+    if (!estado.tamano) falta.push("el tamaño");
+    if (!estado.estilo) falta.push("un estilo");
+    if (!$("nombre").value.trim()) falta.push("tu nombre");
+    if (!$("telefono").value.trim()) falta.push("tu WhatsApp");
+
+    const a = $("enviar");
+    if (falta.length) {
+      a.setAttribute("aria-disabled", "true"); a.href = "#";
+      $("falta").hidden = false;
+      texto($("falta"), "Para enviar, falta completar: " + falta.join(", ") + ".");
+      $("info-foto").hidden = true;
+    } else {
+      a.setAttribute("aria-disabled", "false");
+      a.href = `https://wa.me/${DATOS.whatsapp}?text=${encodeURIComponent(mensaje())}`;
+      $("falta").hidden = true;
+      $("info-foto").hidden = !$("foto").checked;
+    }
+  }
+  $("enviar").addEventListener("click", (ev) => { if ($("enviar").getAttribute("aria-disabled") === "true") ev.preventDefault(); });
+
+  pintar();
+})();
+</script>
