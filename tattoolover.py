@@ -27,6 +27,7 @@ ESTILOS = {
     "Maorí": "maori",
     "Japonés": "japones",
     "Realismo": "realismo",
+    "Retrato": "retrato",
     "Minimalista / Línea fina": "minimalista",
     "Old School": "old_school",
     "Blackwork": "blackwork",
