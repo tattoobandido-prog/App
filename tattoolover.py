@@ -9,7 +9,7 @@ from pathlib import Path
 import streamlit as st
 
 # ================== CONFIGURACIÓN ==================
-WHATSAPP_NUMBER = "595XXXXXXXXX"  # <-- tu número con código de país, sin + ni espacios
+WHATSAPP_NUMBER = "595972815410"  # <-- tu número con código de país, sin + ni espacios
 STUDIO_NAME = "TattooLover"
 CARPETA_ESTILOS = Path("estilos")  # pon aquí las imágenes de referencia
 
